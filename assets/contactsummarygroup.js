@@ -6,20 +6,21 @@ cj(function ($) {
     $.csgGetGroups = function () {
 
         var contactId = $('#cs_csg').attr('data-contactid');
-        CRM.api3('Contact', 'getsingle', {
+        CRM.api3('Contact', 'getgroups', {
             'sequential': 1,
             'contact_id': contactId,
-            'return': ['group']
+            'return': ['title']
         }, {
             success: function (result) {
                 if (!result.is_error) {
-                    // window.console && console.log(result);
-                    var groups = result.groups.split(',').join(', ');
-                    $('#cs_csg_inner .crm-content').html('<div>' + groups + '</div>');
+                    var groupNames = result.values.map(function (value) {
+                        return '<span class="crm-tag-item">' + value.title + '</span>';
+                    }).join(' ');
+                    $('#cs_csg_inner .crm-content').html('<div>' + groupNames + '</div>');
                 }
             },
             error: function (result) {
-                window.console && console.log(result);
+                // window.console && console.log(result);
                 $('#cs_csg_inner .crm-content').html('<div>ERROR</div>');
             }
         });
