@@ -6,6 +6,8 @@ cj(function ($) {
     $.csgGetGroups = function () {
 
         var contactId = $('#cs_csg').attr('data-contactid');
+        var resultDiv = $('#cs_csg_inner .crm-content');
+
         CRM.api3('Contact', 'getgroups', {
             'sequential': 1,
             'contact_id': contactId,
@@ -13,15 +15,22 @@ cj(function ($) {
         }, {
             success: function (result) {
                 if (!result.is_error) {
-                    var groupNames = result.values.map(function (value) {
-                        return '<span class="crm-tag-item">' + value.title + '</span>';
-                    }).join(' ');
-                    $('#cs_csg_inner .crm-content').html('<div>' + groupNames + '</div>');
+                    if(result.values != undefined && result.values.length > 0) {
+                        var groupNames = result.values.map(function (value) {
+                            return '<span class="crm-tag-item">' + value.title + '</span>';
+                        }).join(' ');
+                        resultDiv.html('<div>' + groupNames + '</div>');
+                    } else {
+                        resultDiv.html('<div></div>'); // Not a member of any groups
+                    }
+                } else {
+                    window.console && console.log('csgGetGroups error!', result);
+                    resultDiv.html('<div>ERROR</div>');
                 }
             },
             error: function (result) {
-                // window.console && console.log(result);
-                $('#cs_csg_inner .crm-content').html('<div>ERROR</div>');
+                window.console && console.log('csgGetGroups error!', result);
+                resultDiv.html('<div>ERROR</div>');
             }
         });
     }
